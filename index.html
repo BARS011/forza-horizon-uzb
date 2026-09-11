@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forza Horizon UZ - To'liq 3D Poyga & Tyuning</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Three.js Local Offline + CDN Fallback -->
+  <script src="js/three.min.js"></script>
+  <script>
+    if (!window.THREE) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body>
+
+  <!-- 3D O'yin Maydoni (Three.js WebGL Canvas) -->
+  <div id="game-canvas-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- ========================================================================
+       0. FORZA HORIZON FESTIVAL ASOSIY MENYUSI (START SCREEN)
+       ======================================================================== -->
+  <div id="festival-start-screen" class="active">
+    <div class="festival-bg-vignette"></div>
+    <div class="festival-content">
+      <div class="festival-logo-wrap">
+        <span class="festival-tag">O'ZBEKISTON FESTIVALI</span>
+        <h1 class="festival-title">FORZA HORIZON</h1>
+        <div class="festival-subtitle">ULTRA REALISTIC 3D RACING EXPERIENCE</div>
+      </div>
+
+      <div class="festival-menu-actions">
+        <button class="fest-btn fest-btn-primary" id="fest-btn-play">
+          <span class="fest-icon">🚀</span>
+          <div class="fest-btn-text">
+            <span class="fest-main-label" data-i18n="playNow">O'YINNI BOSHLASH</span>
+            <span class="fest-sub-label">Erkin shahar, 30 poyga yoki 40 parkovka</span>
+          </div>
+        </button>
+
+        <button class="fest-btn" id="fest-btn-dealership">
+          <span class="fest-icon">🚘</span>
+          <div class="fest-btn-text">
+            <span class="fest-main-label" data-i18n="dealership">AVTOSALON (3D SHOWROOM)</span>
+            <span class="fest-sub-label">40 ta mashinani 360° ko'rish va xarid qilish</span>
+          </div>
+        </button>
+
+        <button class="fest-btn" id="fest-btn-garage">
+          <span class="fest-icon">🔧</span>
+          <div class="fest-btn-text">
+            <span class="fest-main-label" data-i18n="garageTuning">GARAJ & TYUNING</span>
+            <span class="fest-sub-label">Fara, eshiklar, rang, spoyler, neon va dvigatel</span>
+          </div>
+        </button>
+
+        <button class="fest-btn" id="fest-btn-settings">
+          <span class="fest-icon">⚙️</span>
+          <div class="fest-btn-text">
+            <span class="fest-main-label" data-i18n="settings">SOZLAMALAR</span>
+            <span class="fest-sub-label">Rul sezuvchanligi, Ultra grafika va FPS</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="fest-footer-info">
+        <span>🎮 Boshqaruv: [W, A, S, D] | [Space] Drift | [E] Start-Stop | [L] Fara | [Q, R] Povorotnik | [P] Dvornik | [C] Kamera</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD: Yuqori Panel (Profil, Balans, FPS, Menyu) -->
+  <div id="hud-top-bar">
+    <div class="hud-profile-badge">
+      <div class="profile-avatar">🏎️</div>
+      <div class="profile-info">
+        <span id="profile-username">Poygachi</span>
+        <span id="profile-money">$10,000</span>
+      </div>
+    </div>
+
+    <div class="hud-top-right">
+      <div id="hud-fps">60 FPS</div>
+      <button class="top-btn" id="btn-open-menu">
+        <span>☰</span> <span data-i18n="settings">Menyu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HUD: Erkin Shahar Garaj Triggri Prompt -->
+  <div id="garage-prompt">
+    <span>🔧</span>
+    <span>TYUNING GARAJIGA KIRISH [Tugmani bosing]</span>
+    <button class="top-btn" id="btn-enter-garage" style="background:#00f0ff; color:#000;">Kirish</button>
+  </div>
+
+  <!-- HUD: Poyga Rejimi Ko'rsatkichlari -->
+  <div id="hud-race-panel" class="mode-hud-panel">
+    <div class="mode-stat-item">
+      <span class="mode-stat-label" data-i18n="pos">O'RIN</span>
+      <span class="mode-stat-val" id="hud-race-pos">1/4</span>
+    </div>
+    <div class="mode-stat-item">
+      <span class="mode-stat-label" data-i18n="lap">AYLANA</span>
+      <span class="mode-stat-val" id="hud-race-lap">1/2</span>
+    </div>
+    <div class="mode-stat-item">
+      <span class="mode-stat-label" data-i18n="time">VAQT</span>
+      <span class="mode-stat-val" id="hud-race-time">00:00.0</span>
+    </div>
+  </div>
+
+  <!-- HUD: Parkovka Rejimi Ko'rsatkichlari -->
+  <div id="hud-parking-panel" class="mode-hud-panel">
+    <div class="mode-stat-item">
+      <span class="mode-stat-label">BOSQICH</span>
+      <span class="mode-stat-val" id="hud-parking-level">#1</span>
+    </div>
+    <div class="mode-stat-item">
+      <span class="mode-stat-label">TO'QNAShUV</span>
+      <span class="mode-stat-val" id="hud-parking-collisions">0/3</span>
+    </div>
+    <div class="mode-stat-item">
+      <span class="mode-stat-label" data-i18n="time">VAQT</span>
+      <span class="mode-stat-val" id="hud-parking-time">00:00.0</span>
+    </div>
+  </div>
+
+  <!-- HUD: Mini-Map / Radar (Chap pastki) -->
+  <div id="radar-container">
+    <canvas id="radar-canvas" width="140" height="140"></canvas>
+  </div>
+
+  <!-- HUD: Mashina Interaktiv Boshqaruv Tugmalari (Markaz pastki) -->
+  <div id="car-controls-bar">
+    <button class="ctrl-btn" id="btn-engine" title="Start / Stop dvigatel">
+      <span>⚡ START</span>
+      <span class="shortcut">[E]</span>
+    </button>
+    <button class="ctrl-btn" id="btn-lights" title="Fara chiroqlari">
+      <span>💡 FARA</span>
+      <span class="shortcut">[L]</span>
+    </button>
+    <button class="ctrl-btn" id="btn-turn-left" title="Chap povorotnik">
+      <span>◀ POV</span>
+      <span class="shortcut">[Q]</span>
+    </button>
+    <button class="ctrl-btn" id="btn-hazard" title="Avariyka">
+      <span>⚠️ AVAR</span>
+      <span class="shortcut">[H]</span>
+    </button>
+    <button class="ctrl-btn" id="btn-turn-right" title="O'ng povorotnik">
+      <span>POV ▶</span>
+      <span class="shortcut">[R]</span>
+    </button>
+    <button class="ctrl-btn" id="btn-wipers" title="Oyna tozalagich (Dvornik)">
+      <span>🌧️ TOZALA</span>
+      <span class="shortcut">[P]</span>
+    </button>
+    <button class="ctrl-btn" id="btn-horn" title="Signal (Gudok)">
+      <span>📢 GUDOK</span>
+      <span class="shortcut">[F]</span>
+    </button>
+    <button class="ctrl-btn" id="btn-cam" title="Kamera almashtirish">
+      <span>🎥 KAMERA</span>
+      <span class="shortcut">[C]</span>
+    </button>
+  </div>
+
+  <!-- HUD: Spidometr & Asboblar Paneli (O'ng pastki) -->
+  <div id="speedometer-container">
+    <div class="speedo-gauge-wrap">
+      <div class="speedo-dial"></div>
+      <div id="speedo-needle"></div>
+      <div class="speedo-center-pivot"></div>
+      <div class="speedo-digital-readout">
+        <span id="speed-digital">0</span>
+        <span class="speed-unit">KM / H</span>
+        <span class="gear-badge" id="gear-indicator">N</span>
+      </div>
+    </div>
+    <div class="nitro-container">
+      <div id="nitro-fill"></div>
+    </div>
+  </div>
+
+  <!-- Xabarnoma qalqib chiquvchisi (Toast) -->
+  <div id="notification-toast">Xush kelibsiz!</div>
+
+  <!-- ========================================================================
+       MODAL OYNALAR
+       ======================================================================== -->
+
+  <!-- 1. Username Kiritish Modali (Ilk marta kirganda) -->
+  <div class="modal-overlay" id="username-modal">
+    <div class="modal-window" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 class="modal-title">FORZA HORIZON UZ</h2>
+      </div>
+      <div class="modal-content" style="text-align: center;">
+        <p style="margin-bottom: 20px; color: #94a3b8;" data-i18n="enterName">O'yinchi ismingizni kiriting:</p>
+        <input type="text" id="username-input" class="setting-control" placeholder="Masalan: Sardor_777" style="width: 100%; font-size: 18px; text-align: center; margin-bottom: 20px;">
+        <button class="action-btn btn-buy" id="btn-save-username" style="width: 100%; padding: 14px; font-size: 16px;" data-i18n="startJourney">Sayohatni Boshlash 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Rejimlarni Tanlash Modali (Play Mode Select) -->
+  <div class="modal-overlay" id="modes-select-modal">
+    <div class="modal-window" style="max-width: 850px;">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="playNow">O'YIN REJIMINI TANLANG</h2>
+        <button class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-content">
+        <div class="main-menu-grid">
+          <div class="menu-card-btn" id="menu-btn-free">
+            <div class="menu-card-icon">🏙️</div>
+            <div class="menu-card-title" data-i18n="freeRoam">Erkin Haydash</div>
+            <div class="menu-card-desc">Katta shahar, erkin drift, yo'l harakati va garajlar</div>
+          </div>
+          <div class="menu-card-btn" id="menu-btn-race">
+            <div class="menu-card-icon">🏁</div>
+            <div class="menu-card-title" data-i18n="raceMode">Poyga (30 Bosqich)</div>
+            <div class="menu-card-desc">Yopiq trassalar, 3D yo'l ko'rsatkich va AI botlar</div>
+          </div>
+          <div class="menu-card-btn" id="menu-btn-parking">
+            <div class="menu-card-icon">🅿️</div>
+            <div class="menu-card-title" data-i18n="parkingMode">Parkovka (40 Bosqich)</div>
+            <div class="menu-card-desc">To'siqlar va har 10-bosqichda Svetofor & Qoidalar Imtihoni</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Asosiy Menyu Modali (Pauza paytida) -->
+  <div class="modal-overlay" id="main-menu-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="gameTitle">FORZA HORIZON: UZBEKISTAN</h2>
+        <button class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-content">
+        <div class="main-menu-grid">
+          <div class="menu-card-btn" id="pause-btn-resume">
+            <div class="menu-card-icon">▶️</div>
+            <div class="menu-card-title">Davom Ettirish</div>
+            <div class="menu-card-desc">O'yinga qaytish</div>
+          </div>
+          <div class="menu-card-btn" id="pause-btn-modes">
+            <div class="menu-card-icon">🎮</div>
+            <div class="menu-card-title">Rejimni O'zgartirish</div>
+            <div class="menu-card-desc">Erkin shahar, poyga yoki parkovka</div>
+          </div>
+          <div class="menu-card-btn" id="pause-btn-dealership">
+            <div class="menu-card-icon">🚘</div>
+            <div class="menu-card-title" data-i18n="dealership">Avtosalon (40 Ta Mashina)</div>
+            <div class="menu-card-desc">360° burib ko'rish va xarid qilish</div>
+          </div>
+          <div class="menu-card-btn" id="pause-btn-garage">
+            <div class="menu-card-icon">🔧</div>
+            <div class="menu-card-title" data-i18n="garageTuning">Garaj & Tyuning</div>
+            <div class="menu-card-desc">Fara, eshiklar, rang, spoyler, neon</div>
+          </div>
+          <div class="menu-card-btn" id="pause-btn-settings">
+            <div class="menu-card-icon">⚙️</div>
+            <div class="menu-card-title" data-i18n="settings">Sozlamalar</div>
+            <div class="menu-card-desc">Rul sezuvchanligi, Ultra grafika va FPS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ALOHIDA TO'LIQ 360° 3D AVTOSALON SHOWROOM MODALI -->
+  <div class="modal-overlay fullscreen-modal" id="dealership-modal">
+    <div class="dealership-fullscreen-wrap">
+      <!-- 3D Studio Canvas -->
+      <canvas id="dealership-canvas"></canvas>
+
+      <!-- Showroom Yuqori Paneli (Kategoriya filterlari va chiqish) -->
+      <div class="dealership-top-bar">
+        <div class="showroom-title-wrap">
+          <h2 class="showroom-brand-title">FORZA SHOWROOM</h2>
+          <span class="showroom-hint">🖱️ Sichqoncha yoki barmoq bilan mashinani 360° burib ko'ring</span>
+        </div>
+
+        <div class="deal-categories-bar">
+          <button class="deal-cat-btn active" data-cat="all" data-i18n="allCars">Barchasi</button>
+          <button class="deal-cat-btn" data-cat="uzbek" data-i18n="uzbekCars">O'zbekiston Avtolari</button>
+          <button class="deal-cat-btn" data-cat="sport" data-i18n="sportCars">Sport & JDM</button>
+          <button class="deal-cat-btn" data-cat="muscle">Muskul Kar</button>
+          <button class="deal-cat-btn" data-cat="supercar" data-i18n="superCars">Superkarlar</button>
+          <button class="deal-cat-btn" data-cat="hypercar" data-i18n="hyperCars">Giperkarlar</button>
+        </div>
+
+        <button class="modal-close-btn" id="btn-close-dealership">✕</button>
+      </div>
+
+      <!-- Oldingi / Keyingi O'tkazish Tugmalari -->
+      <button class="showroom-nav-btn showroom-prev-btn" id="btn-showroom-prev" title="Oldingi mashina">
+        <span>◀</span>
+      </button>
+      <button class="showroom-nav-btn showroom-next-btn" id="btn-showroom-next" title="Keyingi mashina">
+        <span>▶</span>
+      </button>
+
+      <!-- Pastki Chap: Mashina Ma'lumotlari & Xususiyatlari -->
+      <div class="deal-specs-card">
+        <div class="deal-badge" id="deal-car-badge">Hamyonbop • (1/41)</div>
+        <h1 class="deal-name" id="deal-car-name">Daewoo Matiz Best</h1>
+        <div class="deal-brand" id="deal-car-brand">Daewoo Motors</div>
+        <p class="deal-desc" id="deal-car-desc">Shahar tirbandliklarining yengilmas qahramoni!</p>
+
+        <div class="specs-grid">
+          <div class="spec-cell">
+            <span class="spec-label">TEZLIK</span>
+            <span class="spec-val" id="deal-spec-speed">145 KM/H</span>
+          </div>
+          <div class="spec-cell">
+            <span class="spec-label">0-100 KM/H</span>
+            <span class="spec-val" id="deal-spec-accel">12.5 S</span>
+          </div>
+          <div class="spec-cell">
+            <span class="spec-label">QUVVAT</span>
+            <span class="spec-val" id="deal-spec-hp">64 HP</span>
+          </div>
+          <div class="spec-cell">
+            <span class="spec-label">VAZN</span>
+            <span class="spec-val" id="deal-spec-weight">820 KG</span>
+          </div>
+          <div class="spec-cell">
+            <span class="spec-label">UZATMA</span>
+            <span class="spec-val" id="deal-spec-drive">FWD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pastki O'ng: Narx va Sotib Olish / Haydash Tugmasi -->
+      <div class="deal-action-card">
+        <div class="deal-price-label">NARXI</div>
+        <div class="deal-price-val" id="deal-car-price">TEKIN</div>
+        <button class="action-btn btn-buy" id="deal-action-btn" style="padding: 16px 28px; font-size: 16px; width: 100%;">
+          MASHINANI TANLASH
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Poyga Bosqichlari Modali (30 ta bosqich) -->
+  <div class="modal-overlay" id="race-select-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="raceMode">Poyga Rejimi (30 Bosqich)</h2>
+        <button class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-content">
+        <div class="levels-grid" id="race-levels-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Parkovka Bosqichlari Modali (40 ta bosqich) -->
+  <div class="modal-overlay" id="parking-select-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="parkingMode">Parkovka & Yo'l Qoidalari (40 Bosqich)</h2>
+        <button class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-content">
+        <div class="levels-grid" id="parking-levels-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Garaj va Tyuning Modali -->
+  <div class="modal-overlay" id="garage-modal">
+    <div class="modal-window" style="max-width: 1050px;">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="garageTuning">Garaj & Tyuning Ustaxonasi</h2>
+        <div style="display:flex; gap:10px;">
+          <button class="top-btn" id="btn-test-doors" style="background: rgba(0,240,255,0.2); border-color:#00f0ff;">
+            🚪 <span data-i18n="testDoors">Eshiklarni Sinash</span>
+          </button>
+          <button class="modal-close-btn">✕</button>
+        </div>
+      </div>
+      <div class="modal-content">
+        <div class="garage-layout">
+          <div class="garage-canvas-wrap">
+            <canvas id="tuning-preview-canvas"></canvas>
+          </div>
+
+          <div class="garage-options-wrap">
+            <div>
+              <div class="tuning-section-title">🎨 Mashina Rangi (Body Paint)</div>
+              <div class="palette-row" id="tuning-colors-container"></div>
+            </div>
+
+            <div>
+              <div class="tuning-section-title">💡 Fara Chiroqlari Rangi (Headlights)</div>
+              <div class="palette-row" id="tuning-headlights-container"></div>
+            </div>
+
+            <div>
+              <div class="tuning-section-title">🚪 Eshik Ochilish Uslubi (Lambo / Kapalak)</div>
+              <div id="tuning-doors-container"></div>
+            </div>
+
+            <div>
+              <div class="tuning-section-title">🏁 Spoyler & Qanotlar (Spoilers)</div>
+              <div id="tuning-spoilers-container"></div>
+            </div>
+
+            <div>
+              <div class="tuning-section-title">✨ Neon Tag Yoritgich (Underglow)</div>
+              <div id="tuning-neon-container"></div>
+            </div>
+
+            <div>
+              <div class="tuning-section-title">⚡ Dvigatel Quvvati (Engine Upgrade)</div>
+              <div id="tuning-engine-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Sozlamalar Modali (Rul Sezuvchanligi, Grafika, FPS, Til) -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-window" style="max-width: 580px;">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="settings">Sozlamalar</h2>
+        <button class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-content">
+        <div class="settings-form">
+          <!-- RUL SEZUVCHANLIGI -->
+          <div class="setting-row">
+            <div>
+              <div class="setting-label" data-i18n="steeringSens">Rul Sezuvchanligi (Boshqaruv)</div>
+              <div style="font-size: 11px; color: #94a3b8;">Rul haddan tashqari tez burilib ketmasligi uchun sozlang</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="range" id="setting-steering-sens" min="15" max="120" value="45" style="width: 130px;">
+              <span id="setting-sens-val" style="font-weight: 800; color: #00f0ff; width: 45px;">45%</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <span class="setting-label" data-i18n="graphics">Grafika Sifati</span>
+            <select id="setting-graphics" class="setting-control">
+              <option value="ultra">Ultra (Yumshoq soya, PBR lak, 100% Detal)</option>
+              <option value="super">Super / Yuqori</option>
+              <option value="medium">O'rta (Medium)</option>
+              <option value="low">Past (Low - Yuqori FPS)</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <span class="setting-label" data-i18n="fpsLimit">Kadrlar Tezligi (FPS)</span>
+            <select id="setting-fps" class="setting-control">
+              <option value="30">30 FPS</option>
+              <option value="60">60 FPS (Tavsiya etiladi)</option>
+              <option value="90">90 FPS</option>
+              <option value="120">120 FPS</option>
+              <option value="0">Cheklovsiz (Max)</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <span class="setting-label" data-i18n="language">Til (Language)</span>
+            <select id="setting-language" class="setting-control">
+              <option value="uz">O'zbekcha 🇺🇿</option>
+              <option value="en">English 🇬🇧</option>
+              <option value="ru">Русский 🇷🇺</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <span class="setting-label" data-i18n="masterVol">Umumiy Ovoz Balandligi</span>
+            <input type="range" id="setting-vol-master" min="0" max="100" value="80" style="width: 130px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Natija Modali (G'alaba / Mag'lubiyat) -->
+  <div class="modal-overlay" id="result-modal">
+    <div class="modal-window" style="max-width: 460px;">
+      <div class="modal-content result-box">
+        <div id="res-title">G'ALABA! 🏆</div>
+        <div id="res-text">Bosqich muvaffaqiyatli yakunlandi!</div>
+        <div id="res-reward">+$10,000</div>
+        <div class="result-actions">
+          <button class="action-btn btn-select" id="btn-res-retry" data-i18n="retry">Qaytadan</button>
+          <button class="action-btn btn-buy" id="btn-res-next" data-i18n="nextLevel">Keyingi Bosqich ➔</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Asosiy O'yin Boshqaruv Skripti -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
