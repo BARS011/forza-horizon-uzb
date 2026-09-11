@@ -1,0 +1,1144 @@
+/* ==========================================================================
+   FORZA HORIZON UZ - ULTIMATE RACING GAME STYLESHEET
+   Sleek dark theme, neon cyan/amber accents, glassmorphic HUD & responsive UI
+   ========================================================================== */
+
+:root {
+  --primary: #00f0ff;
+  --primary-glow: rgba(0, 240, 255, 0.45);
+  --accent-red: #ef4444;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-purple: #a855f7;
+  --bg-dark: #070a12;
+  --panel-bg: rgba(15, 23, 42, 0.86);
+  --panel-border: rgba(255, 255, 255, 0.14);
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  font-family: var(--font-family);
+  color: #ffffff;
+}
+
+#game-canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ==========================================================================
+   0. FESTIVAL START / ASOSIY MENYU (FORZA HORIZON SCREEN)
+   ========================================================================== */
+#festival-start-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 60px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#festival-start-screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.festival-bg-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 35%, rgba(5, 8, 16, 0.75) 100%);
+  pointer-events: none;
+}
+
+.festival-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.festival-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.festival-tag {
+  align-self: flex-start;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.festival-title {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #ffffff 40%, #00f0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 35px rgba(0, 240, 255, 0.4);
+}
+
+.festival-subtitle {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #94a3b8;
+}
+
+.festival-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 440px;
+  margin-top: auto;
+  margin-bottom: 40px;
+}
+
+.fest-btn {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--panel-border);
+  border-left: 5px solid rgba(255, 255, 255, 0.3);
+  padding: 16px 22px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fest-btn:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--primary);
+  border-left-color: var(--primary);
+  box-shadow: 0 10px 25px rgba(0, 240, 255, 0.25);
+  transform: translateX(12px);
+}
+
+.fest-btn-primary {
+  border-left-color: #22c55e;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.2) 0%, rgba(15, 23, 42, 0.85) 100%);
+}
+
+.fest-btn-primary:hover {
+  border-left-color: #22c55e;
+  border-color: #22c55e;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+}
+
+.fest-icon {
+  font-size: 26px;
+}
+
+.fest-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fest-main-label {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #ffffff;
+}
+
+.fest-sub-label {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.fest-footer-info {
+  font-size: 12px;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   TOP BAR HUD
+   ========================================================================== */
+#hud-top-bar {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hud-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  padding: 8px 18px;
+  border-radius: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+
+.profile-avatar {
+  font-size: 22px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+#profile-username {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  color: #f1f5f9;
+}
+
+#profile-money {
+  font-weight: 800;
+  font-size: 14px;
+  color: #22c55e;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+.hud-top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+#hud-fps {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  letter-spacing: 1px;
+}
+
+.top-btn {
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--panel-border);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+/* ==========================================================================
+   MINI-MAP / RADAR (Bottom-Left)
+   ========================================================================== */
+#radar-container {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(0, 240, 255, 0.5);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 240, 255, 0.2);
+  z-index: 10;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#radar-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ==========================================================================
+   SPEEDOMETER & DASHBOARD (Bottom-Right)
+   ========================================================================== */
+#speedometer-container {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.speedo-gauge-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(15,23,42,0.9) 0%, rgba(9,13,22,0.95) 75%);
+  backdrop-filter: blur(12px);
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 240, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.speedo-dial {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px dashed rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+
+#speedo-needle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 72px;
+  background: linear-gradient(to top, #ef4444, #f87171);
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%) rotate(-130deg);
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+  transition: transform 0.05s linear;
+}
+
+.speedo-center-pivot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+  z-index: 3;
+}
+
+.speedo-digital-readout {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 4;
+}
+
+#speed-digital {
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.speed-unit {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--primary);
+}
+
+.gear-badge {
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #facc15;
+}
+
+/* Nitro Bar */
+.nitro-container {
+  width: 160px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+#nitro-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #00f0ff, #3b82f6);
+  box-shadow: 0 0 12px #00f0ff;
+  transition: width 0.1s ease;
+}
+
+/* ==========================================================================
+   CAR INTERACTIVE BUTTONS BAR (Bottom Center)
+   ========================================================================== */
+#car-controls-bar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--panel-border);
+  padding: 8px 16px;
+  border-radius: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.2s ease;
+}
+
+.ctrl-btn .shortcut {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.ctrl-btn.active-green {
+  background: rgba(34, 197, 94, 0.3);
+  border-color: #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+  color: #86efac;
+}
+
+.ctrl-btn.active-cyan {
+  background: rgba(0, 240, 255, 0.3);
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+  color: #a5f3fc;
+}
+
+.ctrl-btn.active-amber {
+  background: rgba(245, 158, 11, 0.3);
+  border-color: #f59e0b;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+  color: #fde68a;
+}
+
+.ctrl-btn.active-red {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  color: #fca5a5;
+}
+
+/* ==========================================================================
+   MODE HUD PANELS (Top Center)
+   ========================================================================== */
+.mode-hud-panel {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  padding: 10px 24px;
+  border-radius: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  display: none;
+}
+
+.mode-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mode-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 1px;
+}
+
+.mode-stat-val {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+/* Interactive Garage Prompt */
+#garage-prompt {
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 240, 255, 0.2);
+  border: 2px solid #00f0ff;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+  backdrop-filter: blur(12px);
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  animation: pulsePrompt 1.5s infinite;
+  z-index: 10;
+}
+
+#garage-prompt.active {
+  display: flex;
+}
+
+@keyframes pulsePrompt {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+}
+
+/* Notification Toast */
+#notification-toast {
+  position: absolute;
+  top: 140px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: rgba(15, 23, 42, 0.94);
+  border: 1px solid var(--primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px var(--primary-glow);
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 250;
+}
+
+#notification-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   MODAL WINDOWS & MENUS (Overlays)
+   ========================================================================== */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 8, 15, 0.88);
+  backdrop-filter: blur(16px);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-window {
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 240, 255, 0.15);
+  max-width: 900px;
+  width: 90%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  color: #ffffff;
+}
+
+.modal-content {
+  padding: 24px 28px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Main Menu Items */
+.main-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.menu-card-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.menu-card-btn:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 20px var(--primary-glow);
+  transform: translateY(-4px);
+}
+
+.menu-card-icon {
+  font-size: 36px;
+}
+
+.menu-card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.menu-card-desc {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   4. FULLSCREEN 360° 3D DEALERSHIP SHOWROOM
+   ========================================================================== */
+.fullscreen-modal {
+  padding: 0;
+  background: #0a0e17;
+}
+
+.dealership-fullscreen-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#dealership-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.dealership-top-bar {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  right: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.showroom-title-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.showroom-brand-title {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #ffffff, #00f0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.showroom-hint {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.deal-categories-bar {
+  display: flex;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 6px 10px;
+  border-radius: 30px;
+  border: 1px solid var(--panel-border);
+}
+
+.deal-cat-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deal-cat-btn.active, .deal-cat-btn:hover {
+  background: var(--primary);
+  color: #000;
+}
+
+/* 360 Showroom Navigation Arrows */
+.showroom-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 20px var(--primary-glow);
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.showroom-prev-btn { left: 40px; }
+.showroom-next-btn { right: 40px; }
+
+.showroom-nav-btn:hover {
+  background: var(--primary);
+  color: #000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Showroom Specs Card (Bottom Left) */
+.deal-specs-card {
+  position: absolute;
+  bottom: 30px;
+  left: 40px;
+  width: 380px;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.deal-badge {
+  display: inline-block;
+  background: rgba(0, 240, 255, 0.2);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.deal-name {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.deal-brand {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.deal-desc {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.spec-cell {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.spec-val {
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+/* Showroom Action Card (Bottom Right) */
+.deal-action-card {
+  position: absolute;
+  bottom: 30px;
+  right: 40px;
+  width: 280px;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.deal-price-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.deal-price-val {
+  font-size: 32px;
+  font-weight: 900;
+  color: #22c55e;
+  text-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+}
+
+/* ==========================================================================
+   LEVELS & GARAGE LAYOUT
+   ========================================================================== */
+.levels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.level-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.level-card.unlocked:hover {
+  border-color: var(--primary);
+  background: rgba(0, 240, 255, 0.1);
+  transform: translateY(-3px);
+}
+
+.level-card.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.level-card.exam-card {
+  border: 1px solid #eab308;
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.2);
+}
+
+.lvl-num { font-size: 15px; font-weight: 800; color: var(--primary); }
+.level-card.exam-card .lvl-num { color: #facc15; }
+.lvl-title { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+.lvl-reward { font-size: 13px; font-weight: 800; color: #22c55e; }
+.lvl-type { font-size: 11px; color: #94a3b8; }
+
+/* Garage & Tuning Layout */
+.garage-layout {
+  display: flex;
+  gap: 20px;
+  height: 520px;
+}
+
+.garage-canvas-wrap {
+  flex: 1.2;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--panel-border);
+  position: relative;
+  background: #0a0d14;
+}
+
+#tuning-preview-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.garage-options-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.tuning-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.palette-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.color-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.color-dot:hover {
+  transform: scale(1.2);
+  border-color: #ffffff;
+}
+
+.tuning-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.tuning-btn:hover {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: var(--primary);
+}
+
+/* Settings Form */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.setting-label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.setting-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+.setting-control:focus {
+  border-color: var(--primary);
+}
+
+.action-btn {
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-buy { background: #22c55e; color: #000; }
+.btn-buy:hover { background: #16a34a; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5); }
+.btn-select { background: rgba(255, 255, 255, 0.15); color: #fff; }
+.btn-select:hover { background: var(--primary); color: #000; }
+.btn-selected { background: var(--primary); color: #000; cursor: default; }
+
+/* Result Modal */
+.result-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  gap: 14px;
+}
+
+#res-title {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+#res-text {
+  font-size: 16px;
+  color: #cbd5e1;
+  white-space: pre-line;
+}
+
+#res-reward {
+  font-size: 28px;
+  font-weight: 900;
+  color: #22c55e;
+  text-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+}
+
+.result-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  #festival-start-screen { padding: 20px; }
+  .festival-title { font-size: 36px; }
+  .deal-specs-card, .deal-action-card {
+    position: static;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
